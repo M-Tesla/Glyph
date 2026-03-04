@@ -3676,6 +3676,7 @@ local function toggle_chat()
   if chat_view.visible then
     chat_view.target_size = config.plugins.aichat.size
     core.set_active_view(chat_view)
+    chat_view.input_focused = true
   end
   core.redraw = true
 end
@@ -3933,6 +3934,7 @@ command.add(nil, {
     view.input_text = ""
     view.cursor_pos = 0
     core.set_active_view(view)
+    view.input_focused = true
     core.redraw = true
   end,
   ["ai:focus-input"] = function()
