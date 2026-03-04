@@ -15,6 +15,10 @@ config.plugins.aichat = common.merge({
   max_knowledge_size = 100 * 1024,  -- 100KB total knowledge cap
 }, config.plugins.aichat)
 
+-- Forward declarations (needed before function definitions that reference them)
+local chat_view  -- assigned later after AIChatView class is created
+global { glyph_ai_send = false }  -- declared early so selection_actions.lua can safely check it
+
 
 ---------------------------------------------------------------------------
 -- Logging
@@ -3664,7 +3668,7 @@ end
 ---------------------------------------------------------------------------
 -- Plugin setup
 ---------------------------------------------------------------------------
-local chat_view = AIChatView()
+chat_view = AIChatView()
 local node = core.root_view:get_active_node()
 chat_view.node = node:split("right", chat_view, {x = true}, true)
 log("aichat ready")
