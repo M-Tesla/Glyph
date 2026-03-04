@@ -1524,7 +1524,10 @@ end
 
 -- Draws the floating dropdown menu (called LAST in draw() so it renders on top).
 function AIChatView:draw_tab_dropdown_menu()
-  if not self.dropdown_open or not self.tab_dropdown_rect then return end
+  if not self.dropdown_open or not self.tab_dropdown_rect then
+    self.tab_dropdown_item_rects = {}  -- clear stale hit areas when dropdown is closed
+    return
+  end
   local font   = style.font
   local pad    = style.padding.x
   local accent = style.accent or style.caret or style.text
