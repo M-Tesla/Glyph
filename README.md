@@ -9,6 +9,10 @@
    ╚═════╝ ╚══════╝╚═╝   ╚═╝     ╚═╝  ╚═╝
 ```
 
+NOTE: This readme was created with the help of an LLM student. Don't hate me. :)
+
+---
+
 > The IDE that understands your business.
 
 Most editors know your code. Glyph knows your **company**, your **domain**, your **standards**, and your **team** — and uses that context in every decision, every suggestion, every architectural record.
@@ -1175,3 +1179,4 @@ MIT — see [LICENSE](LICENSE)
 <p align="center">
   <em>Your codebase knows syntax. Your IDE should know your business.</em>
 </p>
+
