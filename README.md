@@ -9,7 +9,7 @@
    ╚═════╝ ╚══════╝╚═╝   ╚═╝     ╚═╝  ╚═╝
 ```
 
-NOTE: This readme was created with the help of an LLM student. Don't hate me. :)
+NOTE: This readme was created with the help of an LLM. Don't hate me. :)
 
 ---
 
@@ -1179,4 +1179,5 @@ MIT — see [LICENSE](LICENSE)
 <p align="center">
   <em>Your codebase knows syntax. Your IDE should know your business.</em>
 </p>
+
 
