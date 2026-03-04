@@ -117,18 +117,16 @@ local function get_comment_patterns(syntax, _loop)
           startp = "^\\s*" .. startp:sub(2, startp:len())
         end
         if type(pattern.regex) == "table" then
-          local cs = type(startp) == "string" and regex.compile(startp) or nil
-          local ce = type(pattern.regex[2]) == "string" and regex.compile(pattern.regex[2]) or nil
-          if cs then
-            if ce then
-              table.insert(comments, {"r", cs, ce})
-            else
-              table.insert(comments, {"r", cs})
-            end
+          local c_start = regex.compile(startp)
+          local c_end = pattern.regex[2] and regex.compile(pattern.regex[2])
+          if c_start and c_end then
+            table.insert(comments, {"r", c_start, c_end})
           end
         elseif not_is_string then
-          local cs = type(startp) == "string" and regex.compile(startp) or nil
-          if cs then table.insert(comments, {"r", cs}) end
+          local c_start = regex.compile(startp)
+          if c_start then
+            table.insert(comments, {"r", c_start})
+          end
         end
       end
     elseif pattern.syntax then
