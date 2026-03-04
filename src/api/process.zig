@@ -30,6 +30,7 @@ const STDERR_FD: c_int = 2;
 const REDIRECT_DEFAULT: c_int = -1;
 const REDIRECT_DISCARD: c_int = -2;
 const REDIRECT_PARENT: c_int = -3;
+const REDIRECT_PIPE: c_int = -4;   // create a new pipe for this stream
 
 const WAIT_INFINITE: c_int = -2;
 const WAIT_DEADLINE: c_int = -1;
@@ -242,19 +243,19 @@ fn f_start(L: ?*lua.lua_State) callconv(.c) c_int {
     var stderr_write: HANDLE = INVALID_HANDLE;
 
     // stdin pipe
-    if (fds[0] == STDIN_FD) {
+    if (fds[0] == STDIN_FD or fds[0] == REDIRECT_PIPE) {
         if (kernel32.CreatePipe(&stdin_read, &stdin_write, &sa, 0) == 0)
             return lua.luaL_error(L, "failed to create stdin pipe");
         _ = kernel32.SetHandleInformation(stdin_write, HANDLE_FLAG_INHERIT, 0);
     }
     // stdout pipe
-    if (fds[1] == STDOUT_FD) {
+    if (fds[1] == STDOUT_FD or fds[1] == REDIRECT_PIPE) {
         if (kernel32.CreatePipe(&stdout_read, &stdout_write, &sa, 0) == 0)
             return lua.luaL_error(L, "failed to create stdout pipe");
         _ = kernel32.SetHandleInformation(stdout_read, HANDLE_FLAG_INHERIT, 0);
     }
     // stderr pipe (or redirect to stdout)
-    if (fds[2] == STDERR_FD) {
+    if (fds[2] == STDERR_FD or fds[2] == REDIRECT_PIPE) {
         if (kernel32.CreatePipe(&stderr_read, &stderr_write, &sa, 0) == 0)
             return lua.luaL_error(L, "failed to create stderr pipe");
         _ = kernel32.SetHandleInformation(stderr_read, HANDLE_FLAG_INHERIT, 0);
@@ -267,9 +268,9 @@ fn f_start(L: ?*lua.lua_State) callconv(.c) c_int {
     var si = STARTUPINFOW{};
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
     si.wShowWindow = 0; // SW_HIDE
-    if (fds[0] == STDIN_FD) si.hStdInput = stdin_read;
-    if (fds[1] == STDOUT_FD) si.hStdOutput = stdout_write;
-    if (fds[2] == STDERR_FD or fds[2] == STDOUT_FD) si.hStdError = stderr_write;
+    if (fds[0] == STDIN_FD or fds[0] == REDIRECT_PIPE) si.hStdInput = stdin_read;
+    if (fds[1] == STDOUT_FD or fds[1] == REDIRECT_PIPE) si.hStdOutput = stdout_write;
+    if (fds[2] == STDERR_FD or fds[2] == REDIRECT_PIPE or fds[2] == STDOUT_FD) si.hStdError = stderr_write;
 
     // Convert command to wide string
     const cmd_slice = cmd_ptr[0..cmd_len];
@@ -675,7 +676,7 @@ pub fn luaopen(L: ?*lua.lua_State) callconv(.c) c_int {
 
     lua.lua_pushnumber(L, REDIRECT_DEFAULT);
     lua.lua_setfield(L, -2, "REDIRECT_DEFAULT");
-    lua.lua_pushnumber(L, STDIN_FD);
+    lua.lua_pushnumber(L, REDIRECT_PIPE);
     lua.lua_setfield(L, -2, "REDIRECT_PIPE");
     lua.lua_pushnumber(L, REDIRECT_PARENT);
     lua.lua_setfield(L, -2, "REDIRECT_PARENT");
